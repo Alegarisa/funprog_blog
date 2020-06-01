@@ -231,7 +231,7 @@ Finally, we can generalize this further to loop through each cell in the data co
 
 ```{r error = TRUE}
 
-####Feedback would be appreciated about how to use map to loop through each numeric column within the nested data (d2)
+####Feedback would be appreciated about how to use map to loop through each numeric column within the nested data (d2) ----- AGI: look at bottom for a way to do this, starting in line 289 to 315
 
 means_c_w <- d2 %>%
   mutate(means = map(d2$data, ~mean(data = .x))) %>% 
@@ -284,5 +284,33 @@ descriptives(d, residential)
 
 
 
+```
+
+```{r}
+# a function to select df if it's numeric
+only_numeric <- function(df) {
+  select_numeric <- dplyr::select_if(df, is.numeric)
+  select_numeric
+}
+
+# a list with the functions you want
+smry <- list(mean = function(x) mean(x, na.rm = TRUE), 
+             sd = function(x) sd(x, na.rm = TRUE))
+
+# solution for one case. Dataframe, mtcars, is all numeric 
+map_df(mtcars, function(col) map_df(smry, ~.x(col)),
+       .id = "column")
+
+# wrapping solution in a function
+descriptives <- function(df) {
+  select_numeric <- only_numeric(df) # this function is the one in line 291
+  mean_sd <- map_df(select_numeric, function(col) map_df(smry, ~.x(col)),
+       .id = "column")
+  mean_sd
+}
+
+descriptives(iris)
+descriptives(gss_cat)
+descriptives(d2)
 ```
 

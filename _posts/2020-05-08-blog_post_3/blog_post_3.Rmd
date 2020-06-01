@@ -55,7 +55,9 @@ d %>%
   head()
 ```
 
-Now we can use this as the input for our plots. `pmap()` is a variation of `map()` which allows us to apply a function to multiple vectors simultaneously.
+Now we can use this as the input for our plots. `pmap()` is a variation of `map()` which allows us to apply a function to multiple vectors simultaneously. 
+
+AGI: I would add here that the vector that is put first, corresponds to ..1, the vector that is put second corresponds to ..2, and so on. This helped me understand where to put what. 
 
 ```{r parallel iteration, workplaces mobility trends for each country}
 
@@ -198,3 +200,27 @@ Resolve bugs in 'function for creating plots' code chunks.
 Improve plot visualization 
 
 Repeated use of code? 
+
+```{r}
+# alternative to lines 109 to 136
+by_country_df <- d %>%
+  group_by(country) %>%
+  mutate(label =
+        glue("Overal mobility trends in parks {str_to_title(country)}"))
+
+
+plot_by_country <- by_country_df %>%
+  group_by(country, label) %>%
+  nest() %>%
+  mutate(plots = pmap(list(data, country, label),
+                      ~ ggplot(..1, aes(date, parks)) +
+                        geom_point() + 
+                        geom_line() + 
+    labs(title = glue("Overall mobility trends in {..2}"), 
+         x = "Date",
+         y = "% change",
+         caption = ..3)))
+
+plot_by_country$plots[[1]]
+```
+

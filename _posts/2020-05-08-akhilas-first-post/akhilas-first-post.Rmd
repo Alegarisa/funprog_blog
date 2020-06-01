@@ -212,7 +212,7 @@ tibble(Ability = str_to_title(ability),
 
 ```{r, eval = FALSE, echo = TRUE}
 #extract one
-mean(d2$data[[1]]$residential)
+mean(d2$data[[1]]$residential) # I could not find d2
 
 
 means <- d2 %>% 
@@ -231,7 +231,7 @@ View(means35)
 
 try1 <- function(df){
   
-  df_num <- as.numeric(df)
+  df_num <- as.numeric(df) # # AGI: maybe you want to add a "if (condition) {}" instead of this so you make sure that you have numeric values in the df. Otherwise you would just be coercing values that may not be numeric, for instance a dataframe that has mostly categorical variables like gss_cat.
   
 	means <- purrr::map_dbl(df_num, mean, na.rm = TRUE)
 	sds <- purrr::map_dbl(df_num, sd, na.rm = TRUE)
